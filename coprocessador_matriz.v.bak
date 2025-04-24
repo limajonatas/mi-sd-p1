@@ -1,0 +1,68 @@
+module coprocessador_matriz\ (
+    input clk,
+    input reset,
+    input [27:0] instrucao,  // exemplo: 4b opcode + 3b linha + 3b coluna + 16b dado + 2b id
+    input start_instr
+);
+    // sinais internos
+    wire [3:0] opcode;
+    wire [2:0] linha, coluna;
+    wire [1:0] id_matriz;
+    wire [15:0] dado;
+
+    wire [15:0] dado_a, dado_b, resultado;
+    wire we, re, start_calc;
+    wire [1:0] sel_operacao;
+
+    // --------------------------
+    // Decoder
+    decoder_instrucao decoder (
+        .instrucao(instrucao),
+        .opcode(opcode),
+        .linha(linha),
+        .coluna(coluna),
+        .dado(dado),
+        .id_matriz(id_matriz)
+    );
+
+    // --------------------------
+    // FSM
+    fsm_coprocessador fsm (
+        .clk(clk),
+        .reset(reset),
+        .opcode(opcode),
+        .start_instr(start_instr),
+        .we(we),
+        .re(re),
+        .start_calc(start_calc),
+        .sel_operacao(sel_operacao)
+    );
+
+    // --------------------------
+    // Memória (Ex: 3 blocos A, B, C)
+    // (você pode unificar ou usar id_matriz para escolher)
+
+    memoria_matriz memoria (
+        .clk(clk),
+        .we(we),
+        .re(re),
+        .linha(linha),
+        .coluna(coluna),
+        .id_matriz(id_matriz),
+        .dado_in(dado),
+        .dado_out_a(dado_a),
+        .dado_out_b(dado_b),
+        .resultado(resultado)
+    );
+
+    // --------------------------
+    // ALU
+    alu_matriz alu (
+        .a(dado_a),
+        .b(dado_b),
+        .sel(sel_operacao),
+        .start(start_calc),
+        .resultado(resultado)
+    );
+
+endmodule
