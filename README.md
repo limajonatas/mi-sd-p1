@@ -15,11 +15,28 @@
   </tr>
 </table>
 
-
-
 ## 💻Coprocessador Aritmético de Matrizes – DE1-SoC
 
 Projeto desenvolvido em Verilog para a plataforma DE1-SoC, com o objetivo de criar um coprocessador dedicado a operações com matrizes quadradas de até 5x5. A proposta visa acelerar operações como soma, subtração, multiplicação por escalar, entre outras, utilizando paralelismo e arquitetura em pipeline.
+
+### 🧩 Definição do Problema
+
+Processadores genéricos nem sempre oferecem desempenho ideal para operações matriciais intensivas. O objetivo deste projeto é criar um coprocessador dedicado, capaz de acelerar operações básicas com matrizes, aliviando o processador principal (HPS) de tais tarefas.
+
+### 🔍 Descrição da Solução
+
+A solução consiste em um coprocessador modular implementado em Verilog, desenvolvido especificamente para operar com matrizes quadradas de até 5x5 na plataforma DE1-SoC. Ele foi projetado para trabalhar em conjunto com o processador ARM (HPS), recebendo instruções codificadas em 32 bits que especificam a operação, a matriz de origem, posição e o dado a ser manipulado.
+
+A arquitetura é composta por:
+
+- **Módulo de decodificação de instruções** (`decodificador_instrucao`): responsável por interpretar o opcode, identificando a operação solicitada e extraindo os campos como linha, coluna, id da matriz e valor.
+- **Máquina de estados (FSM)** (`fsm_coprocessador`): controla o fluxo do sistema, sequenciando os estados de leitura da memória, execução da operação e escrita do resultado.
+- **Memória dedicada** (`memoria_matrizes`): armazena até três matrizes (A, B e C) utilizando identificadores binários (00, 01, 10) para seleção. A memória é acessada com base na linha, coluna e id da matriz extraídos da instrução.
+- **ALU personalizada** (`alu_matriz`): a Unidade Lógica e Aritmética (ALU) foi iniciada, com a implementação de operações básicas como soma, subtração e inversão de sinal (oposto). No entanto, ela ainda não está completamente implementada, faltando funcionalidades para operações mais complexas, como multiplicação de matrizes e transposição.
+- **Módulo principal de integração** (`coprocessador_matriz`): faz a orquestração entre os módulos internos, encaminhando os sinais e dados conforme definidos pela FSM.
+
+A comunicação com o HPS ocorre via barramento de controle e dados, possibilitando que as instruções sejam enviadas dinamicamente durante a execução. Embora a ALU tenha sido iniciada, ela ainda precisa de aprimoramentos para suportar operações mais avançadas.
+
 
 ### 🔧Funcionalidades Implementadas
 
